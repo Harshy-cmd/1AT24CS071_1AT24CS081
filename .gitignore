@@ -1,0 +1,46 @@
+# Compiled output
+out/
+bin/
+build/
+*.class
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+nbproject/
+.settings/
+.classpath
+.project
+
+# IntelliJ runtime
+*.xml
+!sql/*.xml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Distribution / packaging
+*.jar
+*.war
+*.ear
+dist/
+
+# Environment overrides (never commit credentials)
+*.env
+local.properties
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+
+# MySQL Connector JAR (add manually to classpath)
+lib/
