@@ -156,27 +156,40 @@ public class ComplaintDetailPanel extends JPanel {
             BorderFactory.createLineBorder(ThemeManager.getInputBorder()),
             BorderFactory.createEmptyBorder(8, 10, 8, 10)));
 
-        // -- Actions card --
-        RoundedPanel actionsCard = buildActionsCard();
-        actionsCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
+        // -- Actions card (staff only) --
+        boolean isStaff = SessionManager.isAdmin() || SessionManager.isEmployee();
+        if (isStaff) {
+            RoundedPanel actionsCard = buildActionsCard();
+            actionsCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
 
-        errorLabel = new JLabel(" ");
-        errorLabel.setFont(ThemeManager.getFontSmall());
-        errorLabel.setForeground(ThemeManager.getDanger());
+            errorLabel = new JLabel(" ");
+            errorLabel.setFont(ThemeManager.getFontSmall());
+            errorLabel.setForeground(ThemeManager.getDanger());
 
-        panel.add(lblTitle);
-        panel.add(Box.createVerticalStrut(8));
-        panel.add(metaCard);
-        panel.add(Box.createVerticalStrut(12));
-        panel.add(descHeader);
-        panel.add(new JScrollPane(descArea));
-        panel.add(Box.createVerticalStrut(12));
-        panel.add(remHeader);
-        panel.add(new JScrollPane(remarksArea));
-        panel.add(Box.createVerticalStrut(12));
-        panel.add(makeSectionHeader("Actions"));
-        panel.add(actionsCard);
-        panel.add(errorLabel);
+            panel.add(lblTitle);
+            panel.add(Box.createVerticalStrut(8));
+            panel.add(metaCard);
+            panel.add(Box.createVerticalStrut(12));
+            panel.add(descHeader);
+            panel.add(new JScrollPane(descArea));
+            panel.add(Box.createVerticalStrut(12));
+            panel.add(remHeader);
+            panel.add(new JScrollPane(remarksArea));
+            panel.add(Box.createVerticalStrut(12));
+            panel.add(makeSectionHeader("Actions"));
+            panel.add(actionsCard);
+            panel.add(errorLabel);
+        } else {
+            panel.add(lblTitle);
+            panel.add(Box.createVerticalStrut(8));
+            panel.add(metaCard);
+            panel.add(Box.createVerticalStrut(12));
+            panel.add(descHeader);
+            panel.add(new JScrollPane(descArea));
+            panel.add(Box.createVerticalStrut(12));
+            panel.add(remHeader);
+            panel.add(new JScrollPane(remarksArea));
+        }
 
         JScrollPane sp = new JScrollPane(panel);
         sp.setBorder(null);

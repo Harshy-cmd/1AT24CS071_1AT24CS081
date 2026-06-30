@@ -106,18 +106,27 @@ public class DashboardPanel extends JPanel {
         // Top row: 4 metric cards
         JPanel cardsRow = buildCardsRow();
 
-        // Middle: chart + activity feed (side by side)
-        JPanel middleRow = new JPanel(new GridLayout(1, 2, ThemeManager.GAP, 0));
-        middleRow.setOpaque(false);
-
-        chartPanel = new StatusChartPanel();
-        JPanel chartCard = wrapInCard("Complaints by Status", chartPanel, 300);
+        // Middle: chart + activity feed (side by side, except for Citizens who don't see Analytics chart)
+        boolean isCitizen = util.SessionManager.isCitizen();
+        JPanel middleRow;
 
         notificationPanel = new NotificationPanel();
         JPanel activityCard = wrapInCard("Recent Activity", notificationPanel, 300);
 
-        middleRow.add(chartCard);
-        middleRow.add(activityCard);
+        if (isCitizen) {
+            middleRow = new JPanel(new GridLayout(1, 1, ThemeManager.GAP, 0));
+            middleRow.setOpaque(false);
+            middleRow.add(activityCard);
+        } else {
+            middleRow = new JPanel(new GridLayout(1, 2, ThemeManager.GAP, 0));
+            middleRow.setOpaque(false);
+
+            chartPanel = new StatusChartPanel();
+            JPanel chartCard = wrapInCard("Complaints by Status", chartPanel, 300);
+
+            middleRow.add(chartCard);
+            middleRow.add(activityCard);
+        }
 
         // Bottom: recent complaints table
         JPanel tableCard = buildRecentComplaintsCard();
@@ -220,11 +229,29 @@ public class DashboardPanel extends JPanel {
         viewBtn.addActionListener(e -> mainFrame.navigate(Constants.Pages.VIEW_COMPLAINTS));
         rptBtn.addActionListener(e  -> mainFrame.navigate(Constants.Pages.REPORTS));
 
+        boolean isAdmin   = util.SessionManager.isAdmin();
+        boolean isCitizen = util.SessionManager.isCitizen();
+        boolean isEmployee = util.SessionManager.isEmployee();
+
+        if (isCitizen) {
+            viewBtn.setText("My Complaints");
+        } else if (isEmployee) {
+            viewBtn.setText("My Backlog");
+        }
+
         bar.add(label);
         bar.add(Box.createHorizontalStrut(8));
-        bar.add(newBtn);
+
+        // Citizens and Admins can create complaints
+        if (isAdmin || isCitizen) {
+            bar.add(newBtn);
+        }
         bar.add(viewBtn);
-        bar.add(rptBtn);
+
+        // Only admins can see reports
+        if (isAdmin) {
+            bar.add(rptBtn);
+        }
         return bar;
     }
 
@@ -270,7 +297,9 @@ public class DashboardPanel extends JPanel {
                 cardResolved.setValue(String.valueOf(resolved));
                 cardCritical.setValue(String.valueOf(critical));
 
-                chartPanel.setData(statusCounts);
+                if (chartPanel != null) {
+                    chartPanel.setData(statusCounts);
+                }
 
                 // Recent complaints table (show last 10)
                 recentTableModel.setRowCount(0);

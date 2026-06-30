@@ -25,6 +25,7 @@ CREATE TABLE users (
     is_active       TINYINT(1)      NOT NULL DEFAULT 1,
     created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login      DATETIME,
+    address         VARCHAR(255),
 
     CONSTRAINT pk_users         PRIMARY KEY (user_id),
     CONSTRAINT uq_users_uname   UNIQUE (username),

@@ -33,10 +33,7 @@ public class UserDAOImpl implements IUserDAO {
 
     @Override
     public User authenticate(String username, String passwordHash) throws DatabaseException {
-        final String sql =
-            "SELECT user_id, full_name, username, password_hash, email, phone, " +
-            "       role, department, is_active, created_at, last_login " +
-            "FROM users WHERE username = ? AND password_hash = ?";
+        final String sql = buildSelectBase() + " WHERE username = ? AND password_hash = ?";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -75,8 +72,8 @@ public class UserDAOImpl implements IUserDAO {
     public int insertUser(User user) throws DatabaseException {
         final String sql =
             "INSERT INTO users (full_name, username, password_hash, email, phone, " +
-            "                   role, department, is_active) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            "                   role, department, is_active, address) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -89,6 +86,7 @@ public class UserDAOImpl implements IUserDAO {
             ps.setString(6, user.getRole());
             ps.setString(7, user.getDepartment());
             ps.setBoolean(8, user.isActive());
+            ps.setString(9, user.getAddress());
 
             int affected = ps.executeUpdate();
             if (affected == 0) throw new DatabaseException("Insert user failed, no rows affected.");
@@ -157,14 +155,15 @@ public class UserDAOImpl implements IUserDAO {
     @Override
     public boolean updateUser(User user) throws DatabaseException {
         final String sql =
-            "UPDATE users SET full_name=?, email=?, phone=?, department=? WHERE user_id=?";
+            "UPDATE users SET full_name=?, email=?, phone=?, department=?, address=? WHERE user_id=?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getFullName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPhone());
             ps.setString(4, user.getDepartment());
-            ps.setInt(5, user.getId());
+            ps.setString(5, user.getAddress());
+            ps.setInt(6, user.getId());
             return ps.executeUpdate() == 1;
         } catch (SQLException e) {
             throw new DatabaseException("Failed to update user: " + e.getMessage(), e, e.getErrorCode());
@@ -300,7 +299,7 @@ public class UserDAOImpl implements IUserDAO {
 
     private String buildSelectBase() {
         return "SELECT user_id, full_name, username, password_hash, email, phone, " +
-               "       role, department, is_active, created_at, last_login FROM users";
+               "       role, department, is_active, created_at, last_login, address FROM users";
     }
 
     private List<User> executeListQuery(String sql) throws DatabaseException {
@@ -335,16 +334,20 @@ public class UserDAOImpl implements IUserDAO {
         boolean isActive    = rs.getBoolean("is_active");
         var createdAt       = DateUtil.toLocalDateTime(rs.getTimestamp("created_at"));
         var lastLogin       = DateUtil.toLocalDateTime(rs.getTimestamp("last_login"));
+        String address      = rs.getString("address");
 
+        User u;
         if ("ADMIN".equalsIgnoreCase(role)) {
-            return new Admin(id, fullName, username, passwordHash, email, phone,
-                             department, isActive, createdAt, lastLogin);
+            u = new Admin(id, fullName, username, passwordHash, email, phone,
+                          department, isActive, createdAt, lastLogin);
         } else if ("CITIZEN".equalsIgnoreCase(role)) {
-            return new Citizen(id, fullName, username, passwordHash, email, phone,
-                               isActive, createdAt, lastLogin);
+            u = new Citizen(id, fullName, username, passwordHash, email, phone,
+                            isActive, createdAt, lastLogin);
         } else {
-            return new Employee(id, fullName, username, passwordHash, email, phone,
-                                department, isActive, createdAt, lastLogin);
+            u = new Employee(id, fullName, username, passwordHash, email, phone,
+                             department, isActive, createdAt, lastLogin);
         }
+        u.setAddress(address);
+        return u;
     }
 }

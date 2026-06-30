@@ -45,6 +45,9 @@ public class User extends Person {
     /** Timestamp of the user's most recent successful login; may be null. */
     private LocalDateTime lastLogin;
 
+    /** Physical address — optional field for citizens. */
+    private String address;
+
     // ------------------------------------------------------------------
     // Constructors (Constructor Overloading — OOP requirement)
     // ------------------------------------------------------------------
@@ -249,6 +252,24 @@ public class User extends Person {
      */
     public String getDisplayLabel() {
         return getFullName() + " (" + username + ")";
+    }
+
+    /**
+     * Returns the physical address of the user.
+     *
+     * @return the address string; may be null
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * Sets the physical address of the user.
+     *
+     * @param address the physical address
+     */
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     // ------------------------------------------------------------------

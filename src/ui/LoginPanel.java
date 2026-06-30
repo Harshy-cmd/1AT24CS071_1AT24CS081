@@ -12,216 +12,174 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.RoundRectangle2D;
 
 /**
- * Login screen for the Complaint Management System.
- *
- * <p>Presents the branded login form with username and password fields,
- * a "Show password" toggle, and a "Forgot Password" link. On success,
- * the authenticated user is stored in the session and
- * {@link MainFrame} is displayed. On failure, inline error messages are
- * shown without dismissing the form.</p>
+ * Modern dual-section login page of the Complaint Management System.
  *
  * @author  CMS Development Team
- * @version 1.0.0
+ * @version 1.1.0
  * @since   2024
  */
 public class LoginPanel extends JFrame {
 
-    // ------------------------------------------------------------------
-    // Fields
-    // ------------------------------------------------------------------
-
     private final UserController userController;
 
-    private JTextField  usernameField;
-    private JPasswordField passwordField;
-    private JLabel      errorLabel;
-    private JLabel      attemptsLabel;
-    private RoundedButton loginButton;
+    // Admin / Employee Portal fields
+    private JTextField adminUsernameField;
+    private JPasswordField adminPasswordField;
+    private JLabel adminErrorLabel;
+    private JLabel adminAttemptsLabel;
+    private RoundedButton adminLoginButton;
+
+    // Citizen Portal card layout
+    private CardLayout citizenCardLayout;
+    private JPanel citizenCardPanel;
 
     private int loginAttempts = 0;
 
-    // ------------------------------------------------------------------
-    // Constructor
-    // ------------------------------------------------------------------
-
-    /**
-     * Creates and shows the Login screen.
-     */
     public LoginPanel() {
         this.userController = new UserController();
         buildUI();
         setVisible(true);
     }
 
-    // ------------------------------------------------------------------
-    // UI Construction
-    // ------------------------------------------------------------------
-
     private void buildUI() {
-        setTitle(Constants.App.WINDOW_TITLE + " — Login");
+        setTitle(Constants.App.WINDOW_TITLE + " — Dual Portal Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 640);
+        setSize(1120, 800);
         setLocationRelativeTo(null);
         setResizable(false);
-        setUndecorated(false);
 
-        // Root panel: two columns
-        JPanel root = new JPanel(new GridLayout(1, 2)) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-            }
-        };
-        root.setBackground(new Color(15, 23, 42));
-
-        // Left panel — branding
-        root.add(buildBrandPanel());
-        // Right panel — form
-        root.add(buildFormPanel());
-
-        setContentPane(root);
-    }
-
-    /** Builds the left branding panel with gradient and decorative elements. */
-    private JPanel buildBrandPanel() {
-        JPanel panel = new JPanel(null) {
+        // Root container with gradient background
+        JPanel root = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
                 // Gradient background
                 GradientPaint gp = new GradientPaint(0, 0, new Color(15, 23, 42),
                         0, getHeight(), new Color(17, 44, 90));
                 g2.setPaint(gp);
                 g2.fillRect(0, 0, getWidth(), getHeight());
-
-                // Decorative circles
-                g2.setColor(new Color(37, 99, 235, 25));
-                g2.fillOval(-80, -80, 350, 350);
+                
+                // Branded circles
                 g2.setColor(new Color(37, 99, 235, 15));
-                g2.fillOval(getWidth() - 160, getHeight() - 200, 320, 320);
+                g2.fillOval(-100, -100, 400, 400);
                 g2.setColor(new Color(37, 99, 235, 10));
-                g2.fillOval(60, getHeight() / 2, 200, 200);
-
-                // App icon
-                g2.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 72));
-                g2.drawString("\uD83D\uDCCB", getWidth() / 2 - 45, 200);
-
-                // App name
-                g2.setFont(new Font(ThemeManager.FONT_FAMILY, Font.BOLD, 26));
-                g2.setColor(Color.WHITE);
-                FontMetrics fm = g2.getFontMetrics();
-                String name = Constants.App.NAME;
-                g2.drawString(name, (getWidth() - fm.stringWidth(name)) / 2, 255);
-
-                // Tagline
-                g2.setFont(new Font(ThemeManager.FONT_FAMILY, Font.PLAIN, 13));
-                g2.setColor(new Color(148, 163, 184));
-                fm = g2.getFontMetrics();
-                String tag = "Register · Track · Resolve";
-                g2.drawString(tag, (getWidth() - fm.stringWidth(tag)) / 2, 280);
-
-                // Feature list
-                g2.setFont(new Font(ThemeManager.FONT_FAMILY, Font.PLAIN, 12));
-                String[] features = {
-                    "✓  Register and track complaints",
-                    "✓  Assign to responsible employees",
-                    "✓  Full audit trail and history",
-                    "✓  Export CSV and print reports",
-                    "✓  Dashboard analytics"
-                };
-                int fy = 340;
-                for (String feature : features) {
-                    g2.setColor(new Color(148, 163, 184));
-                    g2.drawString(feature, 60, fy);
-                    fy += 28;
-                }
-
-                // Version
-                g2.setFont(new Font(ThemeManager.FONT_FAMILY, Font.PLAIN, 10));
-                g2.setColor(new Color(71, 85, 105));
-                g2.drawString("Version " + Constants.App.VERSION, 60, getHeight() - 20);
-
+                g2.fillOval(getWidth() - 300, getHeight() - 300, 450, 450);
                 g2.dispose();
             }
         };
-        panel.setPreferredSize(new Dimension(480, 640));
-        return panel;
+
+        // Header Section (Branding)
+        JPanel headerPanel = new JPanel();
+        headerPanel.setOpaque(false);
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setBorder(new EmptyBorder(30, 20, 10, 20));
+
+        JLabel logoLabel = new JLabel("\uD83D\uDCCB");
+        logoLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
+        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel titleLabel = new JLabel(Constants.App.NAME);
+        titleLabel.setFont(new Font(ThemeManager.FONT_FAMILY, Font.BOLD, 28));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel subtitleLabel = new JLabel("Enterprise Resolution Portal — Select your portal to proceed");
+        subtitleLabel.setFont(ThemeManager.getFontSubtitle());
+        subtitleLabel.setForeground(new Color(148, 163, 184));
+        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        headerPanel.add(logoLabel);
+        headerPanel.add(Box.createVerticalStrut(10));
+        headerPanel.add(titleLabel);
+        headerPanel.add(Box.createVerticalStrut(4));
+        headerPanel.add(subtitleLabel);
+
+        // Body: Side-by-side cards
+        JPanel cardsPanel = new JPanel(new GridLayout(1, 2, 40, 0));
+        cardsPanel.setOpaque(false);
+        cardsPanel.setBorder(new EmptyBorder(20, 50, 40, 50));
+
+        // 1. Admin/Employee card
+        cardsPanel.add(buildAdminCard());
+
+        // 2. Citizen card container (toggles Login & Registration)
+        cardsPanel.add(buildCitizenCardContainer());
+
+        root.add(headerPanel, BorderLayout.NORTH);
+        root.add(cardsPanel, BorderLayout.CENTER);
+
+        setContentPane(root);
     }
 
-    /** Builds the right form panel with username, password, and login button. */
-    private JPanel buildFormPanel() {
-        JPanel outer = new JPanel(new GridBagLayout());
-        outer.setBackground(new Color(30, 41, 59));
+    private JPanel buildAdminCard() {
+        RoundedPanel card = new RoundedPanel();
+        card.setLayout(new BorderLayout());
+        card.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JPanel form = new JPanel();
-        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-        form.setOpaque(false);
-        form.setBorder(new EmptyBorder(0, 48, 0, 48));
-        form.setMaximumSize(new Dimension(420, 600));
+        JPanel inner = new JPanel();
+        inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
+        inner.setOpaque(false);
+        inner.setBorder(new EmptyBorder(0, 24, 0, 24));
 
-        // Title
-        JLabel title = new JLabel("Sign In");
-        title.setFont(new Font(ThemeManager.FONT_FAMILY, Font.BOLD, 28));
+        // Card Header
+        JLabel title = new JLabel("Admin & Staff Portal");
+        title.setFont(new Font(ThemeManager.FONT_FAMILY, Font.BOLD, 24));
         title.setForeground(Color.WHITE);
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel subtitle = new JLabel("Enter your credentials to continue");
-        subtitle.setFont(ThemeManager.getFontSubtitle());
-        subtitle.setForeground(new Color(148, 163, 184));
-        subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel desc = new JLabel("For internal administrators and employees");
+        desc.setFont(ThemeManager.getFontSubtitle());
+        desc.setForeground(new Color(148, 163, 184));
+        desc.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Username field
+        // Fields
         JLabel usernameLabel = makeFieldLabel("Username");
-        usernameField = makeTextField("Enter username");
+        adminUsernameField = makeTextField("Enter username");
 
-        // Password field
         JLabel passwordLabel = makeFieldLabel("Password");
-        passwordField = new JPasswordField();
-        stylePasswordField(passwordField, "Enter password");
+        adminPasswordField = new JPasswordField();
+        stylePasswordField(adminPasswordField, "Enter password");
 
-        // Show password toggle
+        // Show password checkbox
         JCheckBox showPass = new JCheckBox("Show password");
         showPass.setFont(ThemeManager.getFontSmall());
         showPass.setForeground(new Color(148, 163, 184));
         showPass.setOpaque(false);
         showPass.setAlignmentX(Component.LEFT_ALIGNMENT);
         showPass.addActionListener(e ->
-            passwordField.setEchoChar(showPass.isSelected() ? '\0' : '•'));
+                adminPasswordField.setEchoChar(showPass.isSelected() ? '\0' : '•'));
 
-        // Error label
-        errorLabel = new JLabel(" ");
-        errorLabel.setFont(ThemeManager.getFontSmall());
-        errorLabel.setForeground(ThemeManager.getDanger());
-        errorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Errors & Attempts
+        adminErrorLabel = new JLabel(" ");
+        adminErrorLabel.setFont(ThemeManager.getFontSmall());
+        adminErrorLabel.setForeground(ThemeManager.getDanger());
+        adminErrorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        attemptsLabel = new JLabel(" ");
-        attemptsLabel.setFont(ThemeManager.getFontSmall());
-        attemptsLabel.setForeground(ThemeManager.getWarning());
-        attemptsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        adminAttemptsLabel = new JLabel(" ");
+        adminAttemptsLabel.setFont(ThemeManager.getFontSmall());
+        adminAttemptsLabel.setForeground(ThemeManager.getWarning());
+        adminAttemptsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Login button
-        loginButton = new RoundedButton("Sign In", RoundedButton.Style.PRIMARY);
-        loginButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-        loginButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        loginButton.addActionListener(e -> performLogin());
+        // Sign In button
+        adminLoginButton = new RoundedButton("Sign In", RoundedButton.Style.PRIMARY);
+        adminLoginButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        adminLoginButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        adminLoginButton.addActionListener(e -> handleAdminLogin());
 
-        // Default button on Enter
-        getRootPane().setDefaultButton(null);
+        // Keyboard support
         KeyAdapter enterAdapter = new KeyAdapter() {
-            @Override public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) performLogin();
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) handleAdminLogin();
             }
         };
-        usernameField.addKeyListener(enterAdapter);
-        passwordField.addKeyListener(enterAdapter);
+        adminUsernameField.addKeyListener(enterAdapter);
+        adminPasswordField.addKeyListener(enterAdapter);
 
-        // Forgot password link
+        // Forgot password Link
         JPanel linksPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         linksPanel.setOpaque(false);
         linksPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -234,53 +192,94 @@ public class LoginPanel extends JFrame {
         });
         linksPanel.add(forgotLink);
 
-        // Default credentials hint
+        // Demo credentials hint
         JLabel hint = new JLabel("<html><div style='color:#64748B'>Demo: admin / Admin@123</div></html>");
         hint.setFont(ThemeManager.getFontSmall());
         hint.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Assemble form
-        form.add(Box.createVerticalStrut(60));
-        form.add(title);
-        form.add(Box.createVerticalStrut(6));
-        form.add(subtitle);
-        form.add(Box.createVerticalStrut(36));
-        form.add(usernameLabel);
-        form.add(Box.createVerticalStrut(6));
-        form.add(usernameField);
-        form.add(Box.createVerticalStrut(16));
-        form.add(passwordLabel);
-        form.add(Box.createVerticalStrut(6));
-        form.add(passwordField);
-        form.add(Box.createVerticalStrut(6));
-        form.add(showPass);
-        form.add(Box.createVerticalStrut(8));
-        form.add(errorLabel);
-        form.add(attemptsLabel);
-        form.add(Box.createVerticalStrut(20));
-        form.add(loginButton);
-        form.add(Box.createVerticalStrut(16));
-        form.add(linksPanel);
-        form.add(Box.createVerticalStrut(24));
-        form.add(hint);
+        // Build Inner
+        inner.add(Box.createVerticalStrut(20));
+        inner.add(title);
+        inner.add(Box.createVerticalStrut(4));
+        inner.add(desc);
+        inner.add(Box.createVerticalStrut(24));
+        inner.add(usernameLabel);
+        inner.add(Box.createVerticalStrut(6));
+        inner.add(adminUsernameField);
+        inner.add(Box.createVerticalStrut(14));
+        inner.add(passwordLabel);
+        inner.add(Box.createVerticalStrut(6));
+        inner.add(adminPasswordField);
+        inner.add(Box.createVerticalStrut(6));
+        inner.add(showPass);
+        inner.add(Box.createVerticalStrut(6));
+        inner.add(adminErrorLabel);
+        inner.add(adminAttemptsLabel);
+        inner.add(Box.createVerticalStrut(12));
+        inner.add(adminLoginButton);
+        inner.add(Box.createVerticalStrut(14));
+        inner.add(linksPanel);
+        inner.add(Box.createVerticalStrut(14));
+        inner.add(hint);
 
-        outer.add(form, new GridBagConstraints());
-        return outer;
+        card.add(inner, BorderLayout.CENTER);
+        return card;
     }
 
-    // ------------------------------------------------------------------
-    // Business logic
-    // ------------------------------------------------------------------
+    private JPanel buildCitizenCardContainer() {
+        RoundedPanel card = new RoundedPanel();
+        card.setLayout(new BorderLayout());
 
-    private void performLogin() {
-        String username = usernameField.getText().trim();
-        String password = new String(passwordField.getPassword());
+        citizenCardLayout = new CardLayout();
+        citizenCardPanel = new JPanel(citizenCardLayout);
+        citizenCardPanel.setOpaque(false);
 
-        clearErrors();
-        loginButton.setEnabled(false);
-        loginButton.repaint();
+        UserLoginPanel userLogin = new UserLoginPanel(this);
+        UserRegistrationPanel userRegister = new UserRegistrationPanel(this);
 
-        // Run auth on background thread to avoid freezing UI
+        citizenCardPanel.add(userLogin, "login");
+
+        JScrollPane scrollPane = new JScrollPane(userRegister);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        citizenCardPanel.add(scrollPane, "register");
+
+        card.add(citizenCardPanel, BorderLayout.CENTER);
+
+        // Default: Show Citizen login first
+        citizenCardLayout.show(citizenCardPanel, "login");
+
+        return card;
+    }
+
+    public void showRegistrationPanel() {
+        citizenCardLayout.show(citizenCardPanel, "register");
+    }
+
+    public void showLoginPanel() {
+        citizenCardLayout.show(citizenCardPanel, "login");
+    }
+
+    private void handleAdminLogin() {
+        String username = adminUsernameField.getText().trim();
+        String password = new String(adminPasswordField.getPassword());
+        if (username.equals("Enter username")) username = "";
+        
+        performLogin(username, password, adminErrorLabel, adminAttemptsLabel, adminLoginButton);
+    }
+
+    /**
+     * Parameterized login execution used by both Admin and Citizen portals.
+     */
+    public void performLogin(String username, String password, JLabel targetErrorLabel, JLabel targetAttemptsLabel, RoundedButton targetLoginBtn) {
+        targetErrorLabel.setText(" ");
+        targetLoginBtn.setEnabled(false);
+        targetLoginBtn.repaint();
+
         SwingWorker<User, Void> worker = new SwingWorker<>() {
             @Override
             protected User doInBackground() throws Exception {
@@ -289,25 +288,20 @@ public class LoginPanel extends JFrame {
 
             @Override
             protected void done() {
-                loginButton.setEnabled(true);
+                targetLoginBtn.setEnabled(true);
                 try {
                     User user = get();
                     onLoginSuccess(user);
                 } catch (Exception ex) {
                     Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
                     loginAttempts++;
-                    if (cause instanceof ValidationException) {
-                        showError(cause.getMessage());
-                    } else if (cause instanceof AuthenticationException) {
-                        showError(cause.getMessage());
+                    String msg = cause.getMessage();
+                    targetErrorLabel.setText("⚠  " + msg);
+                    if (cause instanceof AuthenticationException) {
                         if (loginAttempts >= Constants.DB.MAX_LOGIN_ATTEMPTS) {
-                            attemptsLabel.setText(
-                                "⚠  " + loginAttempts + " failed attempts. Please verify your credentials.");
+                            targetAttemptsLabel.setText(
+                                    "⚠  " + loginAttempts + " failed attempts. Verify credentials.");
                         }
-                    } else if (cause instanceof DatabaseException) {
-                        showError("Database error: " + cause.getMessage());
-                    } else {
-                        showError("Unexpected error. Please try again.");
                     }
                 }
             }
@@ -324,18 +318,7 @@ public class LoginPanel extends JFrame {
         new ForgotPasswordDialog(this);
     }
 
-    // ------------------------------------------------------------------
-    // UI helpers
-    // ------------------------------------------------------------------
-
-    private void showError(String msg) {
-        errorLabel.setText("⚠  " + msg);
-    }
-
-    private void clearErrors() {
-        errorLabel.setText(" ");
-    }
-
+    // Common styling helpers
     private JLabel makeFieldLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(ThemeManager.getFontBold());
@@ -358,24 +341,26 @@ public class LoginPanel extends JFrame {
             }
         };
         field.setFont(ThemeManager.getFontBody());
-        field.setForeground(new Color(148, 163, 184));
+        field.setForeground(new Color(100, 116, 139));
         field.setCaretColor(Color.WHITE);
         field.setOpaque(false);
         field.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, ThemeManager.INPUT_H + 4));
+                BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
+                BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, ThemeManager.INPUT_H));
         field.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Placeholder behaviour
         field.addFocusListener(new FocusAdapter() {
-            @Override public void focusGained(FocusEvent e) {
+            @Override
+            public void focusGained(FocusEvent e) {
                 if (field.getText().equals(placeholder)) {
                     field.setText("");
                     field.setForeground(Color.WHITE);
                 }
             }
-            @Override public void focusLost(FocusEvent e) {
+
+            @Override
+            public void focusLost(FocusEvent e) {
                 if (field.getText().isBlank()) {
                     field.setText(placeholder);
                     field.setForeground(new Color(100, 116, 139));
@@ -392,9 +377,9 @@ public class LoginPanel extends JFrame {
         field.setCaretColor(Color.WHITE);
         field.setOpaque(false);
         field.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, ThemeManager.INPUT_H + 4));
+                BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
+                BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, ThemeManager.INPUT_H));
         field.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 }
