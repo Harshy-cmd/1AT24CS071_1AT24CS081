@@ -114,7 +114,6 @@ public class Sidebar extends JPanel {
 
     private final NavigationListener listener;
     private NavItem[] navItems;
-    private String    currentPage = Constants.Pages.DASHBOARD;
 
     // ------------------------------------------------------------------
     // Constructor
@@ -161,7 +160,6 @@ public class Sidebar extends JPanel {
      * @param pageName the {@link Constants.Pages} key of the active page
      */
     public void setActivePage(String pageName) {
-        currentPage = pageName;
         for (NavItem item : navItems) {
             item.setSelected(pageName.equals(item.pageName));
         }

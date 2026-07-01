@@ -125,7 +125,6 @@ public class ComplaintDetailPanel extends JPanel {
         metaCard.add(makeKeyLabel("Date Created:")); metaCard.add(lblDate);
 
         // Title
-        JLabel titleHeader = makeSectionHeader("Title");
         lblTitle = makeValueLabel("—");
         lblTitle.setFont(ThemeManager.getFontH3());
         lblTitle.setForeground(ThemeManager.getTextPrimary());

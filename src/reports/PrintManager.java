@@ -34,7 +34,6 @@ public class PrintManager implements IReport, Printable {
 
     private static final int MARGIN_TOP    = 60;
     private static final int MARGIN_LEFT   = 40;
-    private static final int MARGIN_RIGHT  = 40;
     private static final int ROW_HEIGHT    = 18;
     private static final int HEADER_HEIGHT = 36;
     private static final int FONT_SIZE_H1  = 14;

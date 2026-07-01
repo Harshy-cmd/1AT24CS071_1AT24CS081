@@ -3,8 +3,6 @@ package ui;
 import components.*;
 import controller.UserController;
 import exceptions.AuthenticationException;
-import exceptions.DatabaseException;
-import exceptions.ValidationException;
 import model.User;
 import util.Constants;
 

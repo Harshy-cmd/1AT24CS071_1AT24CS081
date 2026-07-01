@@ -31,8 +31,6 @@ public final class DateUtil {
             DateTimeFormatter.ofPattern(Constants.DateFormats.DISPLAY_TIME);
     private static final DateTimeFormatter FMT_DB_DATE          =
             DateTimeFormatter.ofPattern(Constants.DateFormats.DB_DATE);
-    private static final DateTimeFormatter FMT_DB_DATETIME      =
-            DateTimeFormatter.ofPattern(Constants.DateFormats.DB_DATETIME);
     private static final DateTimeFormatter FMT_FILENAME_TS      =
             DateTimeFormatter.ofPattern(Constants.DateFormats.FILENAME_TS);
 

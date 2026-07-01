@@ -4,8 +4,8 @@ import dao.IComplaintDAO;
 import database.DatabaseConnection;
 import exceptions.DatabaseException;
 import model.*;
-import util.Constants;
 import util.DateUtil;
+
 
 import java.sql.*;
 import java.time.LocalDate;

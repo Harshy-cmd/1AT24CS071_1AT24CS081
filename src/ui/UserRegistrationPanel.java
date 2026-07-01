@@ -177,7 +177,7 @@ public class UserRegistrationPanel extends JPanel {
             protected void done() {
                 registerButton.setEnabled(true);
                 try {
-                    int id = get();
+                    get();
                     JOptionPane.showMessageDialog(parent,
                             "Account successfully registered! You can now log in.",
                             "Success", JOptionPane.INFORMATION_MESSAGE);

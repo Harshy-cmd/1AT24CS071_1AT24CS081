@@ -1,7 +1,7 @@
 import database.DatabaseConnection;
-import exceptions.DatabaseException;
 import ui.LoginPanel;
 import ui.SplashScreen;
+
 
 import javax.swing.*;
 

@@ -2,7 +2,6 @@ package ui;
 
 import components.RoundedButton;
 import components.ThemeManager;
-import util.Constants;
 
 import javax.swing.*;
 import java.awt.*;

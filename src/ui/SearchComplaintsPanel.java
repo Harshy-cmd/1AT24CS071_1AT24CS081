@@ -2,7 +2,6 @@ package ui;
 
 import components.*;
 import controller.ComplaintController;
-import exceptions.DatabaseException;
 import model.*;
 import util.Constants;
 import util.DateUtil;

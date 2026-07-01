@@ -1,9 +1,7 @@
 package service;
 
-import dao.IComplaintDAO;
 import dao.IReportDAO;
 import dao.IUserDAO;
-import dao.implementation.ComplaintDAOImpl;
 import dao.implementation.ReportDAOImpl;
 import dao.implementation.UserDAOImpl;
 import exceptions.DatabaseException;
@@ -43,7 +41,6 @@ public class ReportService {
     // ------------------------------------------------------------------
 
     private final IReportDAO    reportDAO;
-    private final IComplaintDAO complaintDAO;
     private final IUserDAO      userDAO;
 
     // ------------------------------------------------------------------
@@ -55,7 +52,6 @@ public class ReportService {
      */
     public ReportService() {
         this.reportDAO    = new ReportDAOImpl();
-        this.complaintDAO = new ComplaintDAOImpl();
         this.userDAO      = new UserDAOImpl();
     }
 
@@ -63,12 +59,10 @@ public class ReportService {
      * Injection constructor — accepts custom DAOs for testing.
      *
      * @param reportDAO    custom {@link IReportDAO}
-     * @param complaintDAO custom {@link IComplaintDAO}
      * @param userDAO      custom {@link IUserDAO}
      */
-    public ReportService(IReportDAO reportDAO, IComplaintDAO complaintDAO, IUserDAO userDAO) {
+    public ReportService(IReportDAO reportDAO, IUserDAO userDAO) {
         this.reportDAO    = reportDAO;
-        this.complaintDAO = complaintDAO;
         this.userDAO      = userDAO;
     }
 

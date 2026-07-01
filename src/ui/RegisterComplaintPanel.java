@@ -2,8 +2,6 @@ package ui;
 
 import components.*;
 import controller.ComplaintController;
-import exceptions.DatabaseException;
-import exceptions.ValidationException;
 import model.*;
 import util.Constants;
 import util.SessionManager;
@@ -237,7 +235,7 @@ public class RegisterComplaintPanel extends JPanel {
             }
             @Override protected void done() {
                 try {
-                    int id = get();
+                    get();
                     JOptionPane.showMessageDialog(RegisterComplaintPanel.this,
                         Constants.Messages.COMPLAINT_REGISTERED +
                         "\nComplaint Number: " + complaint.getComplaintNumber(),
